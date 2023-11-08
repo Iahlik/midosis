@@ -4,10 +4,10 @@ const router = express.Router();
 
 const pool = require('../db/conexion')
 
-//routes
-router.use('/', (req, res) => {
+
+/* router.use('/', (req, res) => {
     res.send('Hola mundo en Express');
-});
+}); */
 
 //Agrega medicamento
 router.post('/medicamentos', async (req, res) => {
