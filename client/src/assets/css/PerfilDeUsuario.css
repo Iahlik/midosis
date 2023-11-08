@@ -1,0 +1,14 @@
+.perfil-container {
+    min-height: 70vh; /* Establece la altura mínima en 70% de la altura de la ventana */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  h1 {
+    font-size: 2rem; /* Cambia el tamaño del título si es necesario */
+  }
+  
+  /* Puedes agregar estilos adicionales según tus necesidades */
+  
