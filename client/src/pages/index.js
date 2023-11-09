@@ -6,3 +6,4 @@ export { default as Home } from './Home';
 export { default as ListaDeMedicamentos } from './ListaDeMedicamentos';
 export { default as PerfilDeUsuario } from './PerfilDeUsuario';
 export { default as RegistroNuevoUsuario } from './RegistroNuevoUsuario';
+export { default as Login } from './Login';

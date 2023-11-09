@@ -4,6 +4,9 @@ import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import "animate.css";
 
 function NavBar() {
+  // Simula el estado de autenticación (puedes adaptarlo a tu lógica real)
+  const isAuthenticated = false; // Cambia a true si el usuario está autenticado
+
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
@@ -20,16 +23,30 @@ function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav className="ml-auto justify-content-end">
-            <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
-              Perfil de Usuario
-            </Nav.Link>
+            {!isAuthenticated && (
+              <>
+                <Nav.Link as={Link} to="/iniciar-sesion" className="text-white">
+                  Iniciar Sesión
+                </Nav.Link>
+                <Nav.Link as={Link} to="/registro-nuevo-usuario" className="text-white">
+                  Registro
+                </Nav.Link>
+              </>
+            )}
+            {isAuthenticated && (
+              <>
+                <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
+                  Perfil de Usuario
+                </Nav.Link>
+                <Button variant="outline-light" as={Link} to="/cerrar-sesion">
+                  Cerrar Sesión
+                </Button>
+              </>
+            )}
             <Nav.Link as={Link} to="/ayuda" className="text-white">
               Ayuda
             </Nav.Link>
           </Nav>
-          <Button variant="outline-light" as={Link} to="/iniciar-sesion">
-            Iniciar Sesión
-          </Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>

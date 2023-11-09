@@ -78,5 +78,22 @@ router.delete('/medicamentos/:dosis_id', async (req, res) => {
       res.status(500).send('Error al eliminar el medicamento');
     }
   });
+
+  // Inicio de sesión
+router.post('/api/iniciar-sesion', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Realiza la autenticación y responde adecuadamente
+    if (email === 'usuario1@example.com' && password === 'contrasena1') {
+      res.status(200).json({ message: 'Inicio de sesión exitoso' });
+    } else {
+      res.status(401).json({ message: 'Credenciales incorrectas' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al iniciar sesión. Inténtalo de nuevo.');
+  }
+});
   
 module.exports = router
