@@ -25,7 +25,7 @@ function NavBar() {
           <Nav className="ml-auto justify-content-end">
             {!isAuthenticated && (
               <>
-                <Nav.Link as={Link} to="/iniciar-sesion" className="text-white">
+                <Nav.Link as={Link} to="/login" className="text-white">
                   Iniciar Sesión
                 </Nav.Link>
                 <Nav.Link as={Link} to="/registro-nuevo-usuario" className="text-white">

@@ -20,7 +20,7 @@ function App() {
             <Route path="/perfil-usuario" element={<PerfilDeUsuario />} />
             <Route path="/registro-nuevo-usuario" element={<RegistroNuevoUsuario />} />
             <Route path="/ayuda" element={<Ayuda />} />
-            <Route path="/iniciar-sesion" element={<Login />} /> {/* Agrega la ruta de inicio de sesión */}
+            <Route path="/login" element={<Login />} /> {/* Agrega la ruta de inicio de sesión */}
             {/* Agrega más rutas según sea necesario */}
           </Routes>
         </div>

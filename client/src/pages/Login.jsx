@@ -1,71 +1,61 @@
 import React, { useState } from "react";
-import { useAuth } from '../context/AuthContext';
-import { Container, Form, Button, Alert } from "react-bootstrap";
+import { Button, Form, Alert } from "react-bootstrap";
+import { useAuth } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 import "animate.css";
 
-function Login() {
-    const { login } = useAuth(); // Accede a la función de inicio de sesión desde el contexto de autenticación
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(null); // Define el estado de error
+export const Login = () => {
+  const { isLoggedIn, error, email, setEmail, password, setPassword, handleSubmit, handleLogout } = useAuth();
+  const navigate = useNavigate(); // Hook para manejar la redirección
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    // Realiza la lógica para enviar los datos de inicio de sesión al servidor
-    try {
-      const response = await fetch("/api/iniciar-sesion", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.status === 200) {
-        // Inicio de sesión exitoso, redirige al usuario a la página principal
-        window.location.href = "/";
-      } else {
-        setError("Credenciales incorrectas. Inténtalo de nuevo.");
-      }
-    } catch (error) {
-      setError("Error al iniciar sesión. Inténtalo de nuevo.");
-    }
+  const handleRedirectToHome = () => {
+    navigate('/'); // Redirige a la página /home al hacer clic en el botón
   };
 
-  return (
-    <Container className="animate__animated animate__fadeIn mt-5 mb-5">
-      <h1>Iniciar sesión</h1>
-      <Form onSubmit={handleLogin}>
-        <Form.Group controlId="email">
-          <Form.Label>Correo Electrónico</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Ingrese su correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Form.Group>
+  if (isLoggedIn) {
+    return (
+      <div>
+        {/* Puedes personalizar el contenido para el usuario autenticado aquí */}
+        <p>Bienvenido, usuario!</p>
+        <Button onClick={handleLogout} variant="primary btn-dark">
+          Cerrar sesión
+        </Button>
+      </div>
+    );
+  }
 
-        <Form.Group controlId="password">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Ingrese su contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <div className="container mt-5">
-          <Button variant="primary" type="submit">
-            Iniciar sesión
-          </Button>
-        </div>
-      </Form>
-    </Container>
+  return (
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="col-md-5 mx-auto border border-dark rounded p-5 animate__animated animate__fadeIn">
+        <h1 className="mt-3">Login</h1>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Ingresa tu email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Label>Contraseña</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
+          <div className="d-flex justify-content-center">
+            <Button onClick={handleSubmit} variant="primary btn-dark mb-3" type="submit">
+              Enviar
+            </Button>
+          </div>
+        </Form>
+        {error ? <Alert variant="danger">{error}</Alert> : null}
+      </div>
+    </div>
   );
 }
 

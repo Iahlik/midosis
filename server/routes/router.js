@@ -1,9 +1,8 @@
 const express = require('express');
-
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const router = express.Router();
-
-const pool = require('../db/conexion')
-
+const pool = require('../db/conexion');
 
 /* router.use('/', (req, res) => {
     res.send('Hola mundo en Express');
@@ -80,20 +79,27 @@ router.delete('/medicamentos/:dosis_id', async (req, res) => {
   });
 
   // Inicio de sesión
-router.post('/api/iniciar-sesion', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Realiza la autenticación y responde adecuadamente
-    if (email === 'usuario1@example.com' && password === 'contrasena1') {
-      res.status(200).json({ message: 'Inicio de sesión exitoso' });
-    } else {
-      res.status(401).json({ message: 'Credenciales incorrectas' });
+  router.post('/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      // Realiza la autenticación y responde adecuadamente
+      if (email === 'usuario1@example.com' && password === 'contrasena1') {
+        // Verifica las credenciales (puedes utilizar una función como verificarCredenciales)
+        await verificarCredenciales(email, password);
+  
+        // Genera un token JWT
+        const token = jwt.sign({ email }, process.env.SECRET_KEY);
+  
+        // Responde con el token
+        res.json({ token });
+      } else {
+        res.status(401).json({ message: 'Credenciales incorrectas' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Error interno del servidor' });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error al iniciar sesión. Inténtalo de nuevo.');
-  }
-});
+  });
   
 module.exports = router
