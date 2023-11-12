@@ -14,10 +14,10 @@ function RegistroNuevoUsuario() {
     e.preventDefault();
 
     // Validación de contraseñas u otros campos, si es necesario
-    if (contrasena.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
-      return;
-    }
+    if (contrasena.length < 6 || correo.trim() === "") {
+    setError("La contraseña debe tener al menos 6 caracteres y el correo electrónico no puede estar vacío");
+    return;
+  }
 
     // Realiza la lógica para enviar los datos al servidor
     try {
@@ -29,13 +29,17 @@ function RegistroNuevoUsuario() {
         body: JSON.stringify({ nombre, correo, contrasena }),
       });
 
+      console.log("Response:", response);  // Agrega este console.log
+
+
       if (response.status === 200) {
         // Registro exitoso, redirige al usuario a la página de inicio de sesión
-        window.location.href = "/iniciar-sesion";
+        window.location.href = "/perfil-usuario";
       } else {
         setError("Error al registrar. Inténtalo de nuevo.");
       }
     } catch (error) {
+      console.error("Error al registrar:", error);  // Agrega este console.error
       setError("Error al registrar. Inténtalo de nuevo.");
     }
   };

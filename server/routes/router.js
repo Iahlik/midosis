@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt'); // Asegúrate de haber instalado esta librería
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 const router = express.Router();
 const pool = require('../db/conexion');
@@ -120,18 +120,31 @@ router.get('/usuarios', async (req, res) => {
 
 // Función para registrar un nuevo usuario
 async function registrarUsuario(usuario) {
-  const { nombre, correo, contrasena } = usuario;
-  const hashedContrasena = await hashContrasena(contrasena);
+  try {
+    const { nombre, correo_electronico, contrasena } = usuario;
 
-  // Realizamos la inserción del usuario en la base de datos
-  await pool.query(
-    'INSERT INTO usuarios (nombre, correo, contrasena) VALUES ($1, $2, $3)',
-    [nombre, correo, hashedContrasena]
-  );
+    // Validación de campos obligatorios
+    if (!nombre || !correo_electronico || !contrasena) {
+      throw new Error("Todos los campos son obligatorios");
+    }
+
+    const hashedContrasena = await hashContrasena(contrasena);
+
+    console.log("Valores:", nombre, correo_electronico, hashedContrasena);
+
+    // Realizamos la inserción del usuario en la base de datos
+    await pool.query(
+      'INSERT INTO usuarios (nombre, correo_electronico, contrasena) VALUES ($1, $2, $3)',
+      [nombre, correo_electronico, hashedContrasena]
+    );
+  } catch (error) {
+    console.error("Error al insertar en la base de datos:", error);
+    throw error;
+  }
 }
 
 // Ruta para registrar un nuevo usuario
-router.post('/registro', async (req, res) => {
+router.post('/usuarios', async (req, res) => {
   try {
     const usuario = req.body;
 
