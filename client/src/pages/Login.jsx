@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Form, Alert } from "react-bootstrap";
 import { useAuth } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import "animate.css";
 
-export const Login = () => {
-  const { isLoggedIn, error, email, setEmail, password, setPassword, handleSubmit, handleLogout } = useAuth();
-  const navigate = useNavigate(); // Hook para manejar la redirección
+const Login = () => {
+  const { user, error, email, setEmail, password, setPassword, handleSubmit, handleLogout } = useAuth();
+  const navigate = useNavigate();
 
-  const handleRedirectToHome = () => {
-    navigate('/'); // Redirige a la página /home al hacer clic en el botón
+   // Función para manejar la redirección después de iniciar sesión
+   const redirectToProfile = () => {
+    navigate('/perfil-usuario'); // Cambia '/perfil' por la ruta real de tu página de Perfil
   };
 
-  if (isLoggedIn) {
+  if (user) {
+    redirectToProfile(); // Redirige automáticamente si ya hay un usuario autenticado
     return (
       <div>
-        {/* Puedes personalizar el contenido para el usuario autenticado aquí */}
-        <p>Bienvenido, usuario!</p>
+        <p>Bienvenido, {user ? user.nombre : 'usuario'}!</p>
         <Button onClick={handleLogout} variant="primary btn-dark">
           Cerrar sesión
         </Button>
@@ -28,7 +29,7 @@ export const Login = () => {
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="col-md-5 mx-auto border border-dark rounded p-5 animate__animated animate__fadeIn">
         <h1 className="mt-3">Login</h1>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={(e) => handleSubmit(e, 'login')}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -48,7 +49,7 @@ export const Login = () => {
             />
           </Form.Group>
           <div className="d-flex justify-content-center">
-            <Button onClick={handleSubmit} variant="primary btn-dark mb-3" type="submit">
+            <Button type="submit" variant="primary btn-dark mb-3">
               Enviar
             </Button>
           </div>
@@ -57,6 +58,6 @@ export const Login = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

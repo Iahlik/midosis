@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AjustesDeAlarma, Ayuda, Configuracion, FormularioDeMedicamento, Home, ListaDeMedicamentos, PerfilDeUsuario, RegistroNuevoUsuario, Login } from './pages/index';
 import { NavBar, Footer } from './components/index';
-import { AuthProvider } from './context/AuthContext'; // Importa el AuthProvider
+import { AuthProvider } from './context/AuthProvider'; // Importa el AuthProvider
 
 function App() {
   return (

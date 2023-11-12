@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { useAuth } from "../context/AuthProvider";
 import "animate.css";
 
 function NavBar() {
-  // Simula el estado de autenticación (puedes adaptarlo a tu lógica real)
-  const isAuthenticated = false; // Cambia a true si el usuario está autenticado
+  const { isLoggedIn, user, handleLogout } = useAuth();
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
@@ -23,7 +23,7 @@ function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav className="ml-auto justify-content-end">
-            {!isAuthenticated && (
+            {!isLoggedIn && (
               <>
                 <Nav.Link as={Link} to="/login" className="text-white">
                   Iniciar Sesión
@@ -33,12 +33,12 @@ function NavBar() {
                 </Nav.Link>
               </>
             )}
-            {isAuthenticated && (
+            {isLoggedIn && (
               <>
                 <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
-                  Perfil de Usuario
+                  {user ? user.nombre : 'Perfil de Usuario'}
                 </Nav.Link>
-                <Button variant="outline-light" as={Link} to="/cerrar-sesion">
+                <Button onClick={handleLogout} variant="outline-light" as={Link} to="/cerrar-sesion">
                   Cerrar Sesión
                 </Button>
               </>

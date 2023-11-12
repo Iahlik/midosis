@@ -1,3 +1,5 @@
+// RegistroNuevoUsuario.jsx
+
 import React, { useState } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import "animate.css";
@@ -19,7 +21,7 @@ function RegistroNuevoUsuario() {
 
     // Realiza la lógica para enviar los datos al servidor
     try {
-      const response = await fetch("/api/registro", {
+      const response = await fetch("http://localhost:3000/usuarios", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,10 +45,10 @@ function RegistroNuevoUsuario() {
       <h1>Registro de Nuevo Usuario</h1>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="nombre">
-          <Form.Label>Nombre</Form.Label>
+          <Form.Label>Nombre de Usuario</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Ingrese su nombre"
+            placeholder="Ingrese su nombre de Usuario"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required
