@@ -6,7 +6,7 @@ import "animate.css";
 
 function RegistroNuevoUsuario() {
   const [nombre, setNombre] = useState("");
-  const [correo, setCorreo] = useState("");
+  const [correo_electronico, setCorreoElectronico] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState(null);
 
@@ -14,7 +14,7 @@ function RegistroNuevoUsuario() {
     e.preventDefault();
 
     // Validación de contraseñas u otros campos, si es necesario
-    if (contrasena.length < 6 || correo.trim() === "") {
+    if (contrasena.length < 6 || correo_electronico.trim() === "") {
     setError("La contraseña debe tener al menos 6 caracteres y el correo electrónico no puede estar vacío");
     return;
   }
@@ -26,7 +26,7 @@ function RegistroNuevoUsuario() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nombre, correo, contrasena }),
+        body: JSON.stringify({ nombre, correo_electronico, contrasena }),
       });
 
       console.log("Response:", response);  // Agrega este console.log
@@ -40,8 +40,7 @@ function RegistroNuevoUsuario() {
       }
     } catch (error) {
       console.error("Error al registrar:", error);  // Agrega este console.error
-      setError("Error al registrar. Inténtalo de nuevo.");
-    }
+      setError(error.message || "Error al registrar. Inténtalo de nuevo.");    }
   };
 
   return (
@@ -64,8 +63,8 @@ function RegistroNuevoUsuario() {
           <Form.Control
             type="email"
             placeholder="Ingrese su correo electrónico"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
+            value={correo_electronico}
+            onChange={(e) => setCorreoElectronico(e.target.value)}
             required
           />
         </Form.Group>

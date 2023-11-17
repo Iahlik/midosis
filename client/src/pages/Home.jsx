@@ -11,7 +11,7 @@ function Home() {
       <img
         src={midosisLogo}
         alt="MiDosis Logo"
-        style={{ maxWidth: "60%", height: "auto" }} // Inline CSS for the logo
+        style={{ maxWidth: "50%", height: "auto" }} // Inline CSS for the logo
       />
       <div className="mb-5">
         <h1>Organiza tu salud</h1>
@@ -20,7 +20,7 @@ function Home() {
         <div className="row">
           <div className="col-4 mb-3">
             {/* Enlace para Iniciar Sesión */}
-            <Link to="/perfil-usuario" className="btn btn-primary d-flex flex-column align-items-center">
+            <Link to="/login" className="btn btn-primary d-flex flex-column align-items-center">
               <FaSignInAlt size={30} />
               <span>Iniciar Sesión</span>
             </Link>

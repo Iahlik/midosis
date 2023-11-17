@@ -33,14 +33,14 @@ function NavBar() {
                 </Nav.Link>
               </>
             )}
-            {isLoggedIn && (
+          {isLoggedIn && (
               <>
                 <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
                   {user ? user.nombre : 'Perfil de Usuario'}
                 </Nav.Link>
-                <Button onClick={handleLogout} variant="outline-light" as={Link} to="/cerrar-sesion">
+                <Link to="/" className="nav-link text-white" onClick={handleLogout}>
                   Cerrar Sesión
-                </Button>
+                </Link>
               </>
             )}
             <Nav.Link as={Link} to="/ayuda" className="text-white">

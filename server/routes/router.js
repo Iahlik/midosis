@@ -90,13 +90,25 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Realiza la autenticación y responde adecuadamente
-    if (email === 'usuario1@example.com' && password === 'contrasena1') {
-      // Genera un token JWT
-      const token = jwt.sign({ email }, process.env.SECRET_KEY);
+    // Consulta la base de datos para obtener el usuario con el correo proporcionado
+    const result = await pool.query('SELECT * FROM usuarios WHERE correo_electronico = $1', [email]);
 
-      // Responde con el token
-      res.json({ token });
+    // Verifica si se encontró un usuario
+    if (result.rows.length > 0) {
+      const usuario = result.rows[0];
+
+      // Compara la contraseña proporcionada con la almacenada en la base de datos
+      const contrasenaValida = await bcrypt.compare(password, usuario.contrasena);
+
+      if (contrasenaValida) {
+        // Genera un token JWT
+        const token = jwt.sign({ email }, process.env.SECRET_KEY);
+
+        // Responde con el token
+        res.json({ token });
+      } else {
+        res.status(401).json({ message: 'Credenciales incorrectas' });
+      }
     } else {
       res.status(401).json({ message: 'Credenciales incorrectas' });
     }
@@ -125,6 +137,7 @@ async function registrarUsuario(usuario) {
 
     // Validación de campos obligatorios
     if (!nombre || !correo_electronico || !contrasena) {
+      console.error("Todos los campos son obligatorios");
       throw new Error("Todos los campos son obligatorios");
     }
 
@@ -137,6 +150,8 @@ async function registrarUsuario(usuario) {
       'INSERT INTO usuarios (nombre, correo_electronico, contrasena) VALUES ($1, $2, $3)',
       [nombre, correo_electronico, hashedContrasena]
     );
+
+    console.log("Usuario registrado con éxito");
   } catch (error) {
     console.error("Error al insertar en la base de datos:", error);
     throw error;

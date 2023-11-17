@@ -10,9 +10,10 @@ const Login = () => {
 
    // Función para manejar la redirección después de iniciar sesión
    const redirectToProfile = () => {
-    navigate('/perfil-usuario'); // Cambia '/perfil' por la ruta real de tu página de Perfil
+    if (user) {
+      navigate('/perfil-usuario');
+    }
   };
-
   if (user) {
     redirectToProfile(); // Redirige automáticamente si ya hay un usuario autenticado
     return (
