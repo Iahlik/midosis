@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom'; // Agrega esta línea
 
 const AuthContext = createContext();
 
@@ -9,6 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [token, setToken] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Se ejecuta solo la primera vez para verificar si ya hay una sesión activa
@@ -43,7 +47,7 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
           setToken(data.token);
           fetchUserData();
-          // Redirige al perfil de usuario después del inicio de sesión exitoso
+          toast.success('Inicio de sesión exitoso');
           navigate('/perfil-usuario');  // Ajusta la ruta según tu configuración
         }
         setEmail('');
@@ -51,9 +55,11 @@ export const AuthProvider = ({ children }) => {
       } else {
         const errorMessage = await response.text();
         setError(errorMessage || 'Credenciales incorrectas');
+        toast.error(errorMessage || 'Credenciales incorrectas');
       }
     } catch (error) {
       setError('Error al realizar el registro o inicio de sesión');
+      toast.error('Error al realizar el registro o inicio de sesión');
     }
   };
 
@@ -76,6 +82,8 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     setIsLoggedInFalse();
+    toast.success('Cerraste sesión exitosamente');
+    navigate('/login');
   };
 
   const fetchUserData = async () => {
