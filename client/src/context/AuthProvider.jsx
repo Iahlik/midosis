@@ -22,8 +22,8 @@ export const AuthProvider = ({ children }) => {
   const handleSubmit = async (e, action) => {
     e.preventDefault();
 
-    console.log('Datos de inicio de sesión:', email, password);
-    if (!email.trim() || !password.trim()) {
+/*     console.log('Datos de inicio de sesión:', email, password);
+ */    if (!email.trim() || !password.trim()) {
       setError('Los datos ingresados no son válidos.');
       return;
     }

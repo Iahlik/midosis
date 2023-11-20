@@ -19,18 +19,18 @@ const Login = () => {
 
   // Imprime el estado del usuario cada vez que cambia
   useEffect(() => {
-    console.log("Historial de navegación:", navigate);
-    console.log("Usuario:", user);
+    /*   console.log("Historial de navegación:", navigate);
+    console.log("Usuario:", user); */
   }, [user]);
 
   // Imprime el estado del correo electrónico y la contraseña cada vez que cambian
   useEffect(() => {
-    console.log("Email:", email);
-  }, [email]);
+    /*     console.log("Email:", email);
+     */  }, [email]);
 
   useEffect(() => {
-    console.log("Password:", password);
-  }, [password]);
+    /*     console.log("Password:", password);
+     */  }, [password]);
 
   useEffect(() => {
     // Función para manejar la redirección después de iniciar sesión

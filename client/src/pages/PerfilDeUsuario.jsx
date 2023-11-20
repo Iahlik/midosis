@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Table, Modal } from 'react-bootstrap';
 import { useAuth } from '../context/AuthProvider';
@@ -16,29 +16,29 @@ function PerfilDeUsuario() {
   const navigate = useNavigate(); 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!user || !user.id) {
-          // Redirige al usuario al inicio de sesión si no está autenticado o si no tiene un ID válido
-          navigate('/perfil-usuario');
-          return;
-        }
-  
-        console.log('Usuario Autenticado:', user);
-  
-        // Llamada para obtener medicamentos al cargar el perfil de usuario
-        const data = await fetchMedicamentos(parseInt(user.id, 10), token);
-        setMedicamentos(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error al obtener medicamentos:', error);
-        setLoading(false);
+  const fetchData = useCallback(async () => {
+    try {
+      if (!user || !user.id) {
+        // Redirige al usuario al inicio de sesión si no está autenticado o si no tiene un ID válido
+        navigate('/perfil-usuario');
+        return;
       }
-    };
-  
-    fetchData();
+
+      console.log('Usuario Autenticado:', user);
+
+      // Llamada para obtener medicamentos al cargar el perfil de usuario
+      const data = await fetchMedicamentos(parseInt(user.id, 10), token);
+      setMedicamentos(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error al obtener medicamentos:', error);
+      setLoading(false);
+    }
   }, [user, token, fetchMedicamentos, navigate]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleAddMedicamento = () => {
     setShowAddModal(true);
@@ -70,8 +70,8 @@ function PerfilDeUsuario() {
     return <p>Cargando...</p>;
   } */
 
-  console.log('Medicamentos:', medicamentos);
-  console.log('Usuario:', user);
+/*   console.log('Medicamentos:', medicamentos);
+  console.log('Usuario:', user); */
 
   return (
     <Container className="perfil-container animate__animated animate__fadeIn mb-5">
