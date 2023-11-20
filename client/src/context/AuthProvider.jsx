@@ -7,52 +7,50 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isRegistered, setIsRegistered] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState('');
 
   useEffect(() => {
-    // Solo se ejecuta la primera vez para verificar si ya hay una sesión activa
+    // Se ejecuta solo la primera vez para verificar si ya hay una sesión activa
     checkLoggedInStatus();
   }, []);
 
   const handleSubmit = async (e, action) => {
     e.preventDefault();
 
+    console.log('Datos de inicio de sesión:', email, password);
     if (!email.trim() || !password.trim()) {
       setError('Los datos ingresados no son válidos.');
       return;
     }
 
     setError('');
-    setIsRegistered(action === 'register');
+    const userData = { email, password };
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch(`http://localhost:3000/${action}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(userData),
       });
 
       if (response.ok) {
         const data = await response.json();
 
-        if (action === 'register') {
-          setIsRegistered(true);
-        } else {
+        if (action === 'login') {
           setIsLoggedIn(true);
           setToken(data.token);
-          fetchUsers(); // Obtén la información del usuario al iniciar sesión
+          fetchUserData();
+          // Redirige al perfil de usuario después del inicio de sesión exitoso
+          navigate('/perfil-usuario');  // Ajusta la ruta según tu configuración
         }
-
         setEmail('');
         setPassword('');
       } else {
-        const errorMessage = await response.text(); // Obtén el mensaje de error del servidor
-        setError(errorMessage || 'Credenciales de inicio de sesión incorrectas');
+        const errorMessage = await response.text();
+        setError(errorMessage || 'Credenciales incorrectas');
       }
     } catch (error) {
       setError('Error al realizar el registro o inicio de sesión');
@@ -60,28 +58,27 @@ export const AuthProvider = ({ children }) => {
   };
 
   const checkLoggedInStatus = async () => {
-    // Verificar si ya hay una sesión activa (por ejemplo, si hay un token almacenado en localStorage)
     const storedToken = localStorage.getItem('token');
 
     if (storedToken) {
       setToken(storedToken);
       setIsLoggedIn(true);
-      fetchUsers();
+      fetchUserData();
     }
   };
 
   const setIsLoggedInFalse = () => {
     setIsLoggedIn(false);
     setUser(null);
-    setToken(null);
+    setToken('');
     localStorage.removeItem('token');
   };
-  
+
   const handleLogout = () => {
     setIsLoggedInFalse();
   };
 
-  const fetchUsers = async () => {
+  const fetchUserData = async () => {
     try {
       const response = await fetch('http://localhost:3000/usuarios', {
         headers: {
@@ -90,15 +87,34 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (!response.ok) {
-        throw new Error('No se pudo obtener la lista de usuarios');
+        throw new Error('No se pudo obtener la información del usuario');
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error('Error al obtener la información del usuario:', error);
+    }
+  };
+
+  const fetchMedicamentos = async (userId, authToken) => {
+    try {
+      const response = await fetch(`http://localhost:3000/medicamentos/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener medicamentos');
       }
 
       const data = await response.json();
-      setUser(data[0]);
-      setIsLoggedIn(true); // Puedes ajustar esto según tu lógica de autenticación
-      console.log('User fetched successfully:', data); 
+      console.log('Medicamentos:', data);
+      return data;
     } catch (error) {
-      console.error('Error al obtener la lista de usuarios:', error);
+      console.error('Error al obtener medicamentos:', error);
+      throw error;
     }
   };
 
@@ -106,20 +122,15 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn,
     setIsLoggedIn,
     setIsLoggedInFalse,
-    name,
-    setName,
     error,
     email,
     setEmail,
     user,
-    setUser,
     password,
     setPassword,
-    isRegistered,
-    setIsRegistered,
-    token,
     handleSubmit,
     handleLogout,
+    fetchMedicamentos,
   };
 
   return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;

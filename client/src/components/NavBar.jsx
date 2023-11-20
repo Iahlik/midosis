@@ -33,16 +33,16 @@ function NavBar() {
                 </Nav.Link>
               </>
             )}
-          {isLoggedIn && (
-              <>
-                <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
-                  {user ? user.nombre : 'Perfil de Usuario'}
-                </Nav.Link>
-                <Link to="/" className="nav-link text-white" onClick={handleLogout}>
-                  Cerrar Sesión
-                </Link>
-              </>
-            )}
+        {isLoggedIn && (
+  <>
+    <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
+      {user && user.nombre ? user.nombre : 'Perfil de Usuario'}
+    </Nav.Link>
+    <Link to="/" className="nav-link text-white" onClick={handleLogout}>
+      Cerrar Sesión
+    </Link>
+  </>
+)}
             <Nav.Link as={Link} to="/ayuda" className="text-white">
               Ayuda
             </Nav.Link>

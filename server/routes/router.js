@@ -33,7 +33,7 @@ router.post('/medicamentos', async (req, res) => {
 // Muestra los medicamentos
 router.get('/medicamentos/:usuario_id', async (req, res) => {
   try {
-    const usuario_id = req.params.usuario_id;
+    const usuario_id = parseInt(req.params.usuario_id, 10); //
 
     // Consulta la base de datos para obtener los medicamentos del usuario
     const { rows } = await pool.query(
@@ -161,10 +161,10 @@ async function registrarUsuario(usuario) {
 // Ruta para registrar un nuevo usuario
 router.post('/usuarios', async (req, res) => {
   try {
-    const usuario = req.body;
+    const { nombre, correo_electronico, contrasena } = req.body;
 
     // Llamada a la función para registrar usuario
-    await registrarUsuario(usuario);
+    await registrarUsuario({ nombre, correo_electronico, contrasena });
 
     res.status(200).json({ message: 'Usuario registrado exitosamente' });
   } catch (error) {
