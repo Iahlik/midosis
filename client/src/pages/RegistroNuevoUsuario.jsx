@@ -1,93 +1,65 @@
-// RegistroNuevoUsuario.jsx
-
-import React, { useState } from "react";
-import { Container, Form, Button, Alert } from "react-bootstrap";
-import "animate.css";
+import React, { useState } from 'react';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { useAuth } from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 function RegistroNuevoUsuario() {
-  const [nombre, setNombre] = useState("");
-  const [correo_electronico, setCorreoElectronico] = useState("");
-  const [contrasena, setContrasena] = useState("");
-  const [error, setError] = useState(null);
+  const { register } = useAuth();
+  const [form, setForm] = useState({ email: '', password: '', nombre: '' });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validación de contraseñas u otros campos, si es necesario
-    if (contrasena.length < 6 || correo_electronico.trim() === "") {
-    setError("La contraseña debe tener al menos 6 caracteres y el correo electrónico no puede estar vacío");
-    return;
-  }
-
-    // Realiza la lógica para enviar los datos al servidor
+    setError('');
     try {
-      const response = await fetch("http://localhost:3000/usuarios", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nombre, correo_electronico, contrasena }),
-      });
-
-      console.log("Response:", response);  // Agrega este console.log
-
-
-      if (response.status === 200) {
-        // Registro exitoso, redirige al usuario a la página de inicio de sesión
-        window.location.href = "/perfil-usuario";
-      } else {
-        setError("Error al registrar. Inténtalo de nuevo.");
-      }
-    } catch (error) {
-      console.error("Error al registrar:", error);  // Agrega este console.error
-      setError(error.message || "Error al registrar. Inténtalo de nuevo.");    }
+      await register(form.email, form.password, form.nombre);
+      setSuccess('Registro exitoso.');
+      setTimeout(() => navigate('/perfil-usuario'), 1500);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
-    <Container className="animate__animated animate__fadeIn mt-5 mb-5">
-      <h1>Registro de Nuevo Usuario</h1>
+    <Container className="mt-5">
+      <h2>Registro de Usuario</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="nombre">
-          <Form.Label>Nombre de Usuario</Form.Label>
+        <Form.Group>
+          <Form.Label>Nombre</Form.Label>
           <Form.Control
-            type="text"
-            placeholder="Ingrese su nombre de Usuario"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            required
+            name="nombre"
+            onChange={handleChange}
+            value={form.nombre}
           />
         </Form.Group>
-
-        <Form.Group controlId="correo">
-          <Form.Label>Correo Electrónico</Form.Label>
+        <Form.Group>
+          <Form.Label>Email</Form.Label>
           <Form.Control
+            name="email"
             type="email"
-            placeholder="Ingrese su correo electrónico"
-            value={correo_electronico}
-            onChange={(e) => setCorreoElectronico(e.target.value)}
-            required
+            onChange={handleChange}
+            value={form.email}
           />
         </Form.Group>
-
-        <Form.Group controlId="contrasena">
+        <Form.Group>
           <Form.Label>Contraseña</Form.Label>
           <Form.Control
+            name="password"
             type="password"
-            placeholder="Ingrese su contraseña"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-            required
+            onChange={handleChange}
+            value={form.password}
           />
         </Form.Group>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <div className="container mt-5">
-          <Button variant="primary" type="submit">
-            Registrarse
-          </Button>
-        </div>
+        <Button type="submit" className="mt-3">Registrarse</Button>
       </Form>
     </Container>
   );
 }
-
 export default RegistroNuevoUsuario;

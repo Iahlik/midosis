@@ -1,153 +1,63 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom'; // Agrega esta línea
+// src/context/AuthProvider.jsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { auth, db } from '../firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [error, setError] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
+  const register = async (email, password, nombre) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'usuarios', cred.user.uid), { nombre });
+    return cred.user;
+  };
+
+  const login = (email, password) =>
+    signInWithEmailAndPassword(auth, email, password);
+
+  const logout = () => signOut(auth);
 
   useEffect(() => {
-    // Se ejecuta solo la primera vez para verificar si ya hay una sesión activa
-    checkLoggedInStatus();
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const docRef = doc(db, 'usuarios', firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          nombre: docSnap.exists() ? docSnap.data().nombre : '',
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleSubmit = async (e, action) => {
-    e.preventDefault();
-
-/*     console.log('Datos de inicio de sesión:', email, password);
- */    if (!email.trim() || !password.trim()) {
-      setError('Los datos ingresados no son válidos.');
-      return;
-    }
-
-    setError('');
-    const userData = { email, password };
-
-    try {
-      const response = await fetch(`http://localhost:3000/${action}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        if (action === 'login') {
-          setIsLoggedIn(true);
-          setToken(data.token);
-          fetchUserData();
-          toast.success('Inicio de sesión exitoso');
-          navigate('/perfil-usuario');  // Ajusta la ruta según tu configuración
-        }
-        setEmail('');
-        setPassword('');
-      } else {
-        const errorMessage = await response.text();
-        setError(errorMessage || 'Credenciales incorrectas');
-        toast.error(errorMessage || 'Credenciales incorrectas');
-      }
-    } catch (error) {
-      setError('Error al realizar el registro o inicio de sesión');
-      toast.error('Error al realizar el registro o inicio de sesión');
-    }
-  };
-
-  const checkLoggedInStatus = async () => {
-    const storedToken = localStorage.getItem('token');
-
-    if (storedToken) {
-      setToken(storedToken);
-      setIsLoggedIn(true);
-      fetchUserData();
-    }
-  };
-
-  const setIsLoggedInFalse = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    setToken('');
-    localStorage.removeItem('token');
-  };
-
-  const handleLogout = () => {
-    setIsLoggedInFalse();
-    toast.success('Cerraste sesión exitosamente');
-    navigate('/login');
-  };
-
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/usuarios', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('No se pudo obtener la información del usuario');
-      }
-
-      const userData = await response.json();
-      setUser(userData);
-    } catch (error) {
-      console.error('Error al obtener la información del usuario:', error);
-    }
-  };
-
-  const fetchMedicamentos = async (userId, authToken) => {
-    try {
-      const response = await fetch(`http://localhost:3000/medicamentos/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al obtener medicamentos');
-      }
-
-      const data = await response.json();
-      console.log('Medicamentos:', data);
-      return data;
-    } catch (error) {
-      console.error('Error al obtener medicamentos:', error);
-      throw error;
-    }
-  };
-
-  const authContextValue = {
-    isLoggedIn,
-    setIsLoggedIn,
-    setIsLoggedInFalse,
-    error,
-    email,
-    setEmail,
-    user,
-    password,
-    setPassword,
-    handleSubmit,
-    handleLogout,
-    fetchMedicamentos,
-  };
-
-  return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn: !!user,
+        handleLogout: logout,
+        register,
+        login,
+      }}
+    >
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 };
 
-export const useAuth = () => {
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error('useAuth debe utilizarse dentro de un AuthProvider');
-  }
-  return authContext;
-};
+export const useAuth = () => useContext(AuthContext);

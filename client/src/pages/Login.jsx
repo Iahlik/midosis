@@ -1,97 +1,66 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form, Alert } from "react-bootstrap";
-import { useAuth } from "../context/AuthProvider";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 import "animate.css";
 
 const Login = () => {
-  const {
-    user,
-    error,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    handleSubmit,
-    handleLogout,
-  } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  // Imprime el estado del usuario cada vez que cambia
-  useEffect(() => {
-    /*   console.log("Historial de navegación:", navigate);
-    console.log("Usuario:", user); */
-  }, [user]);
-
-  // Imprime el estado del correo electrónico y la contraseña cada vez que cambian
-  useEffect(() => {
-    /*     console.log("Email:", email);
-     */  }, [email]);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
-    /*     console.log("Password:", password);
-     */  }, [password]);
-
-  useEffect(() => {
-    // Función para manejar la redirección después de iniciar sesión
-    const redirectToProfile = () => {
-      console.log("Redirigiendo a perfil...");
-      if (user && typeof user === "object") {
-        console.log("Usuario autenticado:", user);
-        navigate("/perfil-usuario");
-      }
-    };
-
-    redirectToProfile(); // Redirige automáticamente si ya hay un usuario autenticado
+    if (user) {
+      navigate("/perfil-usuario");
+    }
   }, [user, navigate]);
 
-  if (user && typeof user === "object") {
-    return (
-      <div>
-        <p>Bienvenido, {user ? user.nombre : "usuario"}!</p>
-        <Button onClick={handleLogout} variant="primary btn-dark">
-          Cerrar sesión
-        </Button>
-      </div>
-    );
-  }
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/perfil-usuario");
+    } catch (err) {
+      setError("Credenciales inválidas o usuario no registrado.");
+    }
+  };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="col-md-5 mx-auto border border-dark rounded p-5 animate__animated animate__fadeIn">
         <h1 className="mt-3">Login</h1>
-        <Form onSubmit={(e) => handleSubmit(e, "login")}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form onSubmit={handleLogin}>
+          <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
               placeholder="Ingresa tu email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                console.log("Email actualizado:", e.target.value);
-              }}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Group className="mb-3">
             <Form.Label>Contraseña</Form.Label>
             <Form.Control
               type="password"
               placeholder="Ingresa tu contraseña"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                console.log("Contraseña verificada:", e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
           <div className="d-flex justify-content-center">
             <Button type="submit" variant="primary btn-dark mb-3">
-              Enviar
+              Iniciar sesión
             </Button>
           </div>
         </Form>
-        {error ? <Alert variant="danger">{error}</Alert> : null}
+        {error && <Alert variant="danger">{error}</Alert>}
       </div>
     </div>
   );
