@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { Navbar, Nav, Container } from "react-bootstrap";
 import { useAuth } from "../context/AuthProvider";
+import logo from "../assets/img/mdlogobg.png";
 import "animate.css";
 
 function NavBar() {
@@ -12,7 +13,7 @@ function NavBar() {
       <Container>
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
           <img
-            src="src/assets/img/mdlogobg.png"
+            src={logo}
             alt="MiDosis Logo"
             width="40"
             height="40"
