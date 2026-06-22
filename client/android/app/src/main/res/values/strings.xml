@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MiDosis</string>
+    <string name="title_activity_main">MiDosis</string>
+    <string name="package_name">com.midosis.app</string>
+    <string name="custom_url_scheme">com.midosis.app</string>
+</resources>

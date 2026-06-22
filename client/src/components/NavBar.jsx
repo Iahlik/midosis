@@ -37,7 +37,10 @@ function NavBar() {
         {isLoggedIn && (
   <>
     <Nav.Link as={Link} to="/perfil-usuario" className="text-white">
-      {user && user.nombre ? user.nombre : 'Perfil de Usuario'}
+      {user && user.nombre ? user.nombre : 'Perfil'}
+    </Nav.Link>
+    <Nav.Link as={Link} to="/ajustes-alarma" className="text-white">
+      Alarmas
     </Nav.Link>
     <Link to="/" className="nav-link text-white" onClick={handleLogout}>
       Cerrar Sesión

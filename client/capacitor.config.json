@@ -1,0 +1,15 @@
+{
+  "appId": "com.midosis.app",
+  "appName": "MiDosis",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#0d6efd",
+      "sound": "beep.wav"
+    }
+  }
+}
