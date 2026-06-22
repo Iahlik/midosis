@@ -7,7 +7,7 @@ const Login = () => {
   const { error, email, setEmail, password, setPassword, handleSubmit } = useAuth();
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="col-md-5 mx-auto border border-dark rounded p-5 animate__animated animate__fadeIn">
         <h1 className="mt-3">Login</h1>
         <Form onSubmit={(e) => handleSubmit(e, 'login')}>

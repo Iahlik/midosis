@@ -18,23 +18,20 @@ function Home() {
       </div>
       <div className="container text-center">
         <div className="row">
-          <div className="col-4 mb-3">
-            {/* Enlace para Iniciar Sesión */}
-            <Link to="/login" className="btn btn-primary d-flex flex-column align-items-center">
+          <div className="col-12 col-sm-4 mb-3">
+            <Link to="/login" className="btn btn-primary w-100 d-flex flex-column align-items-center py-3">
               <FaSignInAlt size={30} />
               <span>Iniciar Sesión</span>
             </Link>
           </div>
-          <div className="col-4 mb-3">
-            {/* Enlace para Registrarse */}
-            <Link to="/registro-nuevo-usuario" className="btn btn-info d-flex flex-column align-items-center">
+          <div className="col-12 col-sm-4 mb-3">
+            <Link to="/registro-nuevo-usuario" className="btn btn-info w-100 d-flex flex-column align-items-center py-3">
               <FaUserPlus size={30} />
               <span>Registrarse</span>
             </Link>
           </div>
-          <div className="col-4 mb-5">
-            {/* Enlace de Ayuda */}
-            <Link to="/ayuda" className="btn btn-success d-flex flex-column align-items-center">
+          <div className="col-12 col-sm-4 mb-5">
+            <Link to="/ayuda" className="btn btn-success w-100 d-flex flex-column align-items-center py-3">
               <FaQuestionCircle size={30} />
               <span>Ayuda</span>
             </Link>
