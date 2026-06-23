@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Button, Table, Modal } from 'react-bootstrap';
 import { useAuth } from '../context/AuthProvider';
 import FormularioDeMedicamento from './FormularioDeMedicamento';
+import FormularioEdicionMedicamento from './FormularioEdicionMedicamento';
 import 'animate.css';
 import '../assets/css/PerfilDeUsuario.css';
 
@@ -12,7 +13,10 @@ function PerfilDeUsuario() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMedicamento, setSelectedMedicamento] = useState(null);
+  const [medicamentoAEliminar, setMedicamentoAEliminar] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
@@ -42,22 +46,37 @@ function PerfilDeUsuario() {
     setShowEditModal(true);
   };
 
-  const handleDeleteMedicamento = async (medicamento) => {
-    const confirmDelete = window.confirm('¿Estás seguro de eliminar este medicamento?');
-    if (!confirmDelete) return;
+  const handleDeleteClick = (medicamento) => {
+    setMedicamentoAEliminar(medicamento);
+    setShowDeleteModal(true);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!medicamentoAEliminar) return;
+    setDeletingId(medicamentoAEliminar.dosis_id);
     try {
-      await deleteMedicamento(medicamento.dosis_id);
-      setMedicamentos((prev) => prev.filter((m) => m.dosis_id !== medicamento.dosis_id));
+      await deleteMedicamento(medicamentoAEliminar.dosis_id);
+      setMedicamentos((prev) => prev.filter((m) => m.dosis_id !== medicamentoAEliminar.dosis_id));
     } catch (error) {
       console.error('Error al eliminar:', error);
-      alert('No se pudo eliminar el medicamento. Intenta de nuevo.');
+    } finally {
+      setShowDeleteModal(false);
+      setMedicamentoAEliminar(null);
+      setDeletingId(null);
     }
   };
 
   const handleSaveMedicamento = (medicamento) => {
-    setMedicamentos([...medicamentos, medicamento]);
+    setMedicamentos((prev) => [...prev, medicamento]);
     setShowAddModal(false);
+  };
+
+  const handleUpdateMedicamento = (updated) => {
+    setMedicamentos((prev) =>
+      prev.map((m) => (m.dosis_id === updated.dosis_id ? updated : m))
+    );
+    setShowEditModal(false);
+    setSelectedMedicamento(null);
   };
 
   if (loading) return <p className="text-center mt-5">Cargando...</p>;
@@ -77,7 +96,7 @@ function PerfilDeUsuario() {
         </div>
       ) : (
         <div>
-          <Table striped bordered hover>
+          <Table striped bordered hover responsive>
             <thead>
               <tr>
                 <th>Nombre del Medicamento</th>
@@ -95,10 +114,18 @@ function PerfilDeUsuario() {
                   <td>{medicamento.intervalo_horas}</td>
                   <td>{medicamento.cada_cuanto_dias}</td>
                   <td>
-                    <Button variant="info" size="sm" onClick={() => handleEditMedicamento(medicamento)}>
+                    <Button
+                      variant="info"
+                      size="sm"
+                      onClick={() => handleEditMedicamento(medicamento)}
+                    >
                       Editar
                     </Button>{' '}
-                    <Button variant="danger" size="sm" onClick={() => handleDeleteMedicamento(medicamento)}>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteClick(medicamento)}
+                    >
                       Eliminar
                     </Button>
                   </td>
@@ -112,6 +139,7 @@ function PerfilDeUsuario() {
         </div>
       )}
 
+      {/* Modal agregar */}
       <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Agregar Medicamento</Modal.Title>
@@ -119,25 +147,48 @@ function PerfilDeUsuario() {
         <Modal.Body>
           <FormularioDeMedicamento onSave={handleSaveMedicamento} />
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
       </Modal>
 
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      {/* Modal editar */}
+      <Modal show={showEditModal} onHide={() => { setShowEditModal(false); setSelectedMedicamento(null); }}>
         <Modal.Header closeButton>
           <Modal.Title>Editar Medicamento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedMedicamento && (
-            <p>Edición de <strong>{selectedMedicamento.nombre_medicamento}</strong> — próximamente.</p>
+            <FormularioEdicionMedicamento
+              medicamento={selectedMedicamento}
+              onSave={handleUpdateMedicamento}
+              onCancel={() => { setShowEditModal(false); setSelectedMedicamento(null); }}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+
+      {/* Modal confirmar eliminación */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar eliminación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {medicamentoAEliminar && (
+            <p>
+              ¿Estás seguro de que quieres eliminar{' '}
+              <strong>{medicamentoAEliminar.nombre_medicamento}</strong>?
+              Esta acción no se puede deshacer.
+            </p>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-            Cerrar
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleConfirmDelete}
+            disabled={!!deletingId}
+          >
+            {deletingId ? 'Eliminando...' : 'Eliminar'}
           </Button>
         </Modal.Footer>
       </Modal>

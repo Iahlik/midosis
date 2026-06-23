@@ -174,11 +174,14 @@ router.post('/medicamentos', verifyToken, async (req, res) => {
 router.put('/medicamentos/:dosis_id', verifyToken, async (req, res) => {
   try {
     const dosis_id = parseInt(req.params.dosis_id, 10);
-    const { cantidad_mg, intervalo_horas, cada_cuanto_dias } = req.body;
+    const { medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias } = req.body;
 
     await pool.query(
-      'UPDATE detalles_dosis SET cantidad_mg = $1, intervalo_horas = $2, cada_cuanto_dias = $3 WHERE dosis_id = $4',
-      [cantidad_mg, intervalo_horas, cada_cuanto_dias, dosis_id]
+      `UPDATE detalles_dosis
+       SET medicamento_id = COALESCE($1, medicamento_id),
+           cantidad_mg = $2, intervalo_horas = $3, cada_cuanto_dias = $4
+       WHERE dosis_id = $5`,
+      [medicamento_id || null, cantidad_mg, intervalo_horas, cada_cuanto_dias, dosis_id]
     );
 
     res.status(200).json({ message: 'Medicamento actualizado con éxito' });
@@ -210,6 +213,29 @@ router.get('/catalogo-medicamentos', verifyToken, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al obtener catálogo' });
+  }
+});
+
+// Agregar medicamento al catálogo (crea si no existe, retorna existente si ya está)
+router.post('/catalogo-medicamentos', verifyToken, async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre || !nombre.trim()) return res.status(400).json({ error: 'Nombre requerido' });
+
+    const existing = await pool.query(
+      'SELECT medicamento_id FROM medicamentos WHERE LOWER(nombre) = LOWER($1)',
+      [nombre.trim()]
+    );
+    if (existing.rows.length > 0) return res.json(existing.rows[0]);
+
+    const { rows } = await pool.query(
+      'INSERT INTO medicamentos (nombre) VALUES ($1) RETURNING medicamento_id',
+      [nombre.trim()]
+    );
+    res.status(201).json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al agregar al catálogo' });
   }
 });
 

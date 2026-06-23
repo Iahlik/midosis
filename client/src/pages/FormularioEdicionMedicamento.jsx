@@ -4,15 +4,15 @@ import { useAuth } from '../context/AuthProvider';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-function FormularioDeMedicamento({ onSave }) {
-  const { user, token } = useAuth();
+function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
+  const { token } = useAuth();
   const [catalogo, setCatalogo] = useState([]);
-  const [medicamentoId, setMedicamentoId] = useState('');
+  const [medicamentoId, setMedicamentoId] = useState(String(medicamento.medicamento_id));
   const [modoManual, setModoManual] = useState(false);
   const [nombreManual, setNombreManual] = useState('');
-  const [cantidad, setCantidad] = useState('');
-  const [intervalo, setIntervalo] = useState('');
-  const [frecuencia, setFrecuencia] = useState('');
+  const [cantidad, setCantidad] = useState(String(medicamento.cantidad_mg));
+  const [intervalo, setIntervalo] = useState(String(medicamento.intervalo_horas));
+  const [frecuencia, setFrecuencia] = useState(String(medicamento.cada_cuanto_dias));
   const [loading, setLoading] = useState(false);
   const [loadingCatalogo, setLoadingCatalogo] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +27,7 @@ function FormularioDeMedicamento({ onSave }) {
         const data = await res.json();
         setCatalogo(data);
       } catch {
-        setError('No se pudo cargar el catálogo de medicamentos.');
+        setError('No se pudo cargar el catálogo.');
       } finally {
         setLoadingCatalogo(false);
       }
@@ -41,14 +41,6 @@ function FormularioDeMedicamento({ onSave }) {
 
     if (modoManual && !nombreManual.trim()) {
       setError('Ingresa el nombre del medicamento.');
-      return;
-    }
-    if (!modoManual && !medicamentoId) {
-      setError('Selecciona un medicamento del catálogo.');
-      return;
-    }
-    if (!cantidad || !intervalo || !frecuencia) {
-      setError('Por favor completa todos los campos.');
       return;
     }
 
@@ -68,11 +60,10 @@ function FormularioDeMedicamento({ onSave }) {
         medId = catData.medicamento_id;
       }
 
-      const res = await fetch(`${API_URL}/medicamentos`, {
-        method: 'POST',
+      const res = await fetch(`${API_URL}/medicamentos/${medicamento.dosis_id}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          usuario_id: user.id,
           medicamento_id: medId,
           cantidad_mg: parseFloat(cantidad),
           intervalo_horas: parseInt(intervalo),
@@ -82,21 +73,20 @@ function FormularioDeMedicamento({ onSave }) {
 
       if (!res.ok) throw new Error();
 
-      const medsRes = await fetch(`${API_URL}/medicamentos/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const nombreMed = modoManual
+        ? nombreManual.trim()
+        : catalogo.find((m) => m.medicamento_id === medId)?.nombre || medicamento.nombre_medicamento;
+
+      onSave({
+        ...medicamento,
+        medicamento_id: medId,
+        nombre_medicamento: nombreMed,
+        cantidad_mg: parseFloat(cantidad),
+        intervalo_horas: parseInt(intervalo),
+        cada_cuanto_dias: parseInt(frecuencia),
       });
-      const meds = await medsRes.json();
-      const ultimo = meds[meds.length - 1];
-
-      onSave(ultimo);
-
-      setCantidad('');
-      setIntervalo('');
-      setFrecuencia('');
-      setMedicamentoId('');
-      setNombreManual('');
     } catch {
-      setError('Error al guardar el medicamento. Intenta de nuevo.');
+      setError('Error al actualizar el medicamento. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -163,7 +153,6 @@ function FormularioDeMedicamento({ onSave }) {
           type="number"
           min="0.1"
           step="0.1"
-          placeholder="Ej: 500"
           value={cantidad}
           onChange={(e) => setCantidad(e.target.value)}
           required
@@ -176,7 +165,6 @@ function FormularioDeMedicamento({ onSave }) {
           type="number"
           min="1"
           max="72"
-          placeholder="Ej: 8 (cada 8 horas)"
           value={intervalo}
           onChange={(e) => setIntervalo(e.target.value)}
           required
@@ -188,18 +176,22 @@ function FormularioDeMedicamento({ onSave }) {
         <Form.Control
           type="number"
           min="1"
-          placeholder="Ej: 7 (por 7 días)"
           value={frecuencia}
           onChange={(e) => setFrecuencia(e.target.value)}
           required
         />
       </Form.Group>
 
-      <Button variant="primary" type="submit" disabled={loading}>
-        {loading ? 'Guardando...' : 'Guardar'}
-      </Button>
+      <div className="d-flex gap-2">
+        <Button variant="primary" type="submit" disabled={loading}>
+          {loading ? 'Guardando...' : 'Guardar cambios'}
+        </Button>
+        <Button variant="secondary" type="button" onClick={onCancel}>
+          Cancelar
+        </Button>
+      </div>
     </Form>
   );
 }
 
-export default FormularioDeMedicamento;
+export default FormularioEdicionMedicamento;
