@@ -8,8 +8,7 @@
   "plugins": {
     "LocalNotifications": {
       "smallIcon": "ic_stat_icon_config_sample",
-      "iconColor": "#0d6efd",
-      "sound": "beep.wav"
+      "iconColor": "#0d6efd"
     }
   }
 }
