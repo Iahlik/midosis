@@ -67,8 +67,8 @@ function PerfilDeUsuario() {
     }
   };
 
-  const handleSaveMedicamento = (medicamento) => {
-    setMedicamentos((prev) => [...prev, medicamento]);
+  const handleSaveMedicamento = (meds) => {
+    setMedicamentos(meds);
     setShowAddModal(false);
   };
 

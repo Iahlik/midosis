@@ -123,6 +123,53 @@ router.get('/usuarios/me', verifyToken, async (req, res) => {
   }
 });
 
+// Actualizar datos del usuario autenticado (nombre y/o contraseña)
+router.put('/usuarios/me', verifyToken, async (req, res) => {
+  try {
+    const { nombre, contrasena_actual, contrasena_nueva } = req.body;
+
+    const { rows } = await pool.query(
+      'SELECT * FROM usuarios WHERE usuario_id = $1',
+      [req.user.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
+    const usuario = rows[0];
+
+    const setClauses = [];
+    const values = [];
+    let idx = 1;
+
+    if (nombre && nombre.trim()) {
+      setClauses.push(`nombre = $${idx++}`);
+      values.push(nombre.trim());
+    }
+
+    if (contrasena_nueva) {
+      if (!contrasena_actual) return res.status(400).json({ error: 'Debes ingresar tu contraseña actual' });
+      if (contrasena_nueva.length < 6) return res.status(400).json({ error: 'La contraseña nueva debe tener al menos 6 caracteres' });
+
+      const valida = await bcrypt.compare(contrasena_actual, usuario.contrasena);
+      if (!valida) return res.status(400).json({ error: 'La contraseña actual es incorrecta' });
+
+      setClauses.push(`contrasena = $${idx++}`);
+      values.push(await bcrypt.hash(contrasena_nueva, 10));
+    }
+
+    if (setClauses.length === 0) return res.status(400).json({ error: 'No hay cambios para guardar' });
+
+    values.push(req.user.id);
+    const { rows: updated } = await pool.query(
+      `UPDATE usuarios SET ${setClauses.join(', ')} WHERE usuario_id = $${idx} RETURNING usuario_id, nombre, correo_electronico`,
+      values
+    );
+
+    res.json(updated[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // Obtener medicamentos del usuario (con nombre del medicamento)
 router.get('/medicamentos/:usuario_id', verifyToken, async (req, res) => {
   try {

@@ -1,3 +1,11 @@
+# Android keystore — never commit
+*.jks
+*.keystore
+
+# Android release APK
+android/app/release/
+android/app/build/
+
 # Logs
 logs
 *.log

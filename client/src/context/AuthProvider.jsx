@@ -98,6 +98,27 @@ export const AuthProvider = ({ children }) => {
     if (!response.ok) throw new Error('Error al eliminar el medicamento');
   };
 
+  const updateUser = async ({ nombre, contrasena_actual, contrasena_nueva }) => {
+    const response = await fetch(`${API_URL}/usuarios/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ nombre, contrasena_actual, contrasena_nueva }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Error al actualizar');
+
+    if (nombre) {
+      const updatedUser = { ...user, nombre: data.nombre };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+    return data;
+  };
+
   const authContextValue = {
     isLoggedIn,
     error,
@@ -111,6 +132,7 @@ export const AuthProvider = ({ children }) => {
     handleLogout,
     fetchMedicamentos,
     deleteMedicamento,
+    updateUser,
   };
 
   return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;

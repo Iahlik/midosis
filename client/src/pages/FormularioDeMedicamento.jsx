@@ -89,7 +89,7 @@ function FormularioDeMedicamento({ onSave }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const meds = await medsRes.json();
-      onSave(meds[meds.length - 1]);
+      onSave(meds);
 
       setCantidad(''); setFrecuenciaKey('24'); setIntervaloPersonalizado('');
       setHoraInicio(''); setDuracionKey('indefinido'); setDuracionPersonalizada('');

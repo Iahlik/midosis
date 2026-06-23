@@ -16,10 +16,26 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            def keystoreFile = project.hasProperty('KEYSTORE_FILE') ? file(KEYSTORE_FILE) : file("$rootDir/midosis-release.jks")
+            if (keystoreFile.exists()) {
+                storeFile keystoreFile
+                storePassword project.hasProperty('KEYSTORE_PASSWORD') ? KEYSTORE_PASSWORD : System.getenv('KEYSTORE_PASSWORD') ?: ''
+                keyAlias     project.hasProperty('KEY_ALIAS')          ? KEY_ALIAS          : System.getenv('KEY_ALIAS') ?: 'midosis'
+                keyPassword  project.hasProperty('KEY_PASSWORD')        ? KEY_PASSWORD        : System.getenv('KEY_PASSWORD') ?: ''
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            def ksFile = project.hasProperty('KEYSTORE_FILE') ? file(KEYSTORE_FILE) : file("$rootDir/midosis-release.jks")
+            if (ksFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

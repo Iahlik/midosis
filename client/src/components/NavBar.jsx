@@ -42,6 +42,9 @@ function NavBar() {
     <Nav.Link as={Link} to="/ajustes-alarma" className="text-white">
       Alarmas
     </Nav.Link>
+    <Nav.Link as={Link} to="/configuracion" className="text-white">
+      Configuración
+    </Nav.Link>
     <Link to="/" className="nav-link text-white" onClick={handleLogout}>
       Cerrar Sesión
     </Link>
