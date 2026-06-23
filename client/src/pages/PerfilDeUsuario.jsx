@@ -4,6 +4,7 @@ import { Container, Button, Table, Modal } from 'react-bootstrap';
 import { useAuth } from '../context/AuthProvider';
 import FormularioDeMedicamento from './FormularioDeMedicamento';
 import FormularioEdicionMedicamento from './FormularioEdicionMedicamento';
+import { labelFrecuencia, labelDuracion } from '../utils/frecuencias';
 import 'animate.css';
 import '../assets/css/PerfilDeUsuario.css';
 
@@ -101,8 +102,8 @@ function PerfilDeUsuario() {
               <tr>
                 <th>Medicamento</th>
                 <th>Cantidad (mg)</th>
-                <th>Intervalo (h)</th>
-                <th>Días</th>
+                <th>Frecuencia</th>
+                <th>Duración</th>
                 <th>Hora</th>
                 <th>Acciones</th>
               </tr>
@@ -112,8 +113,8 @@ function PerfilDeUsuario() {
                 <tr key={medicamento.dosis_id}>
                   <td>{medicamento.nombre_medicamento}</td>
                   <td>{medicamento.cantidad_mg}</td>
-                  <td>{medicamento.intervalo_horas}</td>
-                  <td>{medicamento.cada_cuanto_dias}</td>
+                  <td>{labelFrecuencia(medicamento.intervalo_horas)}</td>
+                  <td>{labelDuracion(medicamento.cada_cuanto_dias)}</td>
                   <td>
                     {medicamento.hora_inicio
                       ? medicamento.hora_inicio.slice(0, 5)

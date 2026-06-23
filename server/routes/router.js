@@ -155,7 +155,7 @@ router.post('/medicamentos', verifyToken, async (req, res) => {
   try {
     const { usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias, hora_inicio } = req.body;
 
-    if (!usuario_id || !medicamento_id || !cantidad_mg || !intervalo_horas || !cada_cuanto_dias) {
+    if (!usuario_id || !medicamento_id || !cantidad_mg || !intervalo_horas) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
