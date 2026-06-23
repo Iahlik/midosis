@@ -38,16 +38,17 @@ function PerfilDeUsuario() {
   const proximaDosis = useMemo(() => {
     const now = new Date();
     const nowMin = now.getHours() * 60 + now.getMinutes();
-    const futuras = medicamentos
+    const conHora = medicamentos
       .filter(m => m.hora_inicio)
       .map(m => ({
         hora: m.hora_inicio.slice(0, 5),
         min: parseInt(m.hora_inicio.slice(0, 2)) * 60 + parseInt(m.hora_inicio.slice(3, 5)),
-        nombre: m.nombre_medicamento,
       }))
-      .filter(m => m.min > nowMin)
       .sort((a, b) => a.min - b.min);
-    return futuras[0] || null;
+    const hoy = conHora.filter(m => m.min > nowMin);
+    if (hoy.length > 0) return { ...hoy[0], esManana: false };
+    if (conHora.length > 0) return { ...conHora[0], esManana: true };
+    return null;
   }, [medicamentos]);
 
   const handleAddMedicamento = () => setShowAddModal(true);
@@ -98,7 +99,10 @@ function PerfilDeUsuario() {
             <Card className="stat-card text-center">
               <Card.Body>
                 <div className="stat-number">{proximaDosis ? proximaDosis.hora : '—'}</div>
-                <div className="stat-label"><FaClock className="me-1" />Próxima dosis</div>
+                <div className="stat-label">
+                  <FaClock className="me-1" />
+                  {proximaDosis?.esManana ? 'Mañana' : 'Próxima dosis'}
+                </div>
               </Card.Body>
             </Card>
           </Col>
