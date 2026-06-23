@@ -135,7 +135,8 @@ router.get('/medicamentos/:usuario_id', verifyToken, async (req, res) => {
     const { rows } = await pool.query(
       `SELECT dd.dosis_id, dd.usuario_id, dd.medicamento_id,
               m.nombre AS nombre_medicamento,
-              dd.cantidad_mg, dd.intervalo_horas, dd.cada_cuanto_dias
+              dd.cantidad_mg, dd.intervalo_horas, dd.cada_cuanto_dias,
+              dd.hora_inicio
        FROM detalles_dosis dd
        JOIN medicamentos m ON dd.medicamento_id = m.medicamento_id
        WHERE dd.usuario_id = $1`,
@@ -152,15 +153,17 @@ router.get('/medicamentos/:usuario_id', verifyToken, async (req, res) => {
 // Agregar medicamento
 router.post('/medicamentos', verifyToken, async (req, res) => {
   try {
-    const { usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias } = req.body;
+    const { usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias, hora_inicio } = req.body;
 
     if (!usuario_id || !medicamento_id || !cantidad_mg || !intervalo_horas || !cada_cuanto_dias) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
     await pool.query(
-      'INSERT INTO detalles_dosis (usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias) VALUES ($1, $2, $3, $4, $5)',
-      [usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias]
+      `INSERT INTO detalles_dosis
+         (usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias, hora_inicio)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [usuario_id, medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias, hora_inicio || null]
     );
 
     res.status(201).json({ message: 'Medicamento agregado con éxito' });
@@ -174,14 +177,15 @@ router.post('/medicamentos', verifyToken, async (req, res) => {
 router.put('/medicamentos/:dosis_id', verifyToken, async (req, res) => {
   try {
     const dosis_id = parseInt(req.params.dosis_id, 10);
-    const { medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias } = req.body;
+    const { medicamento_id, cantidad_mg, intervalo_horas, cada_cuanto_dias, hora_inicio } = req.body;
 
     await pool.query(
       `UPDATE detalles_dosis
        SET medicamento_id = COALESCE($1, medicamento_id),
-           cantidad_mg = $2, intervalo_horas = $3, cada_cuanto_dias = $4
-       WHERE dosis_id = $5`,
-      [medicamento_id || null, cantidad_mg, intervalo_horas, cada_cuanto_dias, dosis_id]
+           cantidad_mg = $2, intervalo_horas = $3, cada_cuanto_dias = $4,
+           hora_inicio = $5
+       WHERE dosis_id = $6`,
+      [medicamento_id || null, cantidad_mg, intervalo_horas, cada_cuanto_dias, hora_inicio || null, dosis_id]
     );
 
     res.status(200).json({ message: 'Medicamento actualizado con éxito' });

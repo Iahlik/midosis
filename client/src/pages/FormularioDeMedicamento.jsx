@@ -13,6 +13,7 @@ function FormularioDeMedicamento({ onSave }) {
   const [cantidad, setCantidad] = useState('');
   const [intervalo, setIntervalo] = useState('');
   const [frecuencia, setFrecuencia] = useState('');
+  const [horaInicio, setHoraInicio] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingCatalogo, setLoadingCatalogo] = useState(true);
   const [error, setError] = useState(null);
@@ -77,6 +78,7 @@ function FormularioDeMedicamento({ onSave }) {
           cantidad_mg: parseFloat(cantidad),
           intervalo_horas: parseInt(intervalo),
           cada_cuanto_dias: parseInt(frecuencia),
+          hora_inicio: horaInicio || null,
         }),
       });
 
@@ -93,6 +95,7 @@ function FormularioDeMedicamento({ onSave }) {
       setCantidad('');
       setIntervalo('');
       setFrecuencia('');
+      setHoraInicio('');
       setMedicamentoId('');
       setNombreManual('');
     } catch {
@@ -193,6 +196,18 @@ function FormularioDeMedicamento({ onSave }) {
           onChange={(e) => setFrecuencia(e.target.value)}
           required
         />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Hora de inicio <span className="text-muted fw-normal">(opcional)</span></Form.Label>
+        <Form.Control
+          type="time"
+          value={horaInicio}
+          onChange={(e) => setHoraInicio(e.target.value)}
+        />
+        <Form.Text className="text-muted">
+          Primera dosis del día. Las siguientes se calculan según el intervalo.
+        </Form.Text>
       </Form.Group>
 
       <Button variant="primary" type="submit" disabled={loading}>

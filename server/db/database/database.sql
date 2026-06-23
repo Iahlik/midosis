@@ -20,7 +20,8 @@ CREATE TABLE detalles_dosis (
     medicamento_id INT REFERENCES medicamentos(medicamento_id),
     cantidad_mg DECIMAL(5, 2) NOT NULL,
     intervalo_horas INT NOT NULL,
-    cada_cuanto_dias INT NOT NULL
+    cada_cuanto_dias INT NOT NULL,
+    hora_inicio TIME
 );
 
 CREATE TABLE reset_tokens (

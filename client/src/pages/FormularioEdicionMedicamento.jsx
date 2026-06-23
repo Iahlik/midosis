@@ -13,6 +13,9 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
   const [cantidad, setCantidad] = useState(String(medicamento.cantidad_mg));
   const [intervalo, setIntervalo] = useState(String(medicamento.intervalo_horas));
   const [frecuencia, setFrecuencia] = useState(String(medicamento.cada_cuanto_dias));
+  const [horaInicio, setHoraInicio] = useState(
+    medicamento.hora_inicio ? medicamento.hora_inicio.slice(0, 5) : ''
+  );
   const [loading, setLoading] = useState(false);
   const [loadingCatalogo, setLoadingCatalogo] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +71,7 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
           cantidad_mg: parseFloat(cantidad),
           intervalo_horas: parseInt(intervalo),
           cada_cuanto_dias: parseInt(frecuencia),
+          hora_inicio: horaInicio || null,
         }),
       });
 
@@ -84,6 +88,7 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
         cantidad_mg: parseFloat(cantidad),
         intervalo_horas: parseInt(intervalo),
         cada_cuanto_dias: parseInt(frecuencia),
+        hora_inicio: horaInicio || null,
       });
     } catch {
       setError('Error al actualizar el medicamento. Intenta de nuevo.');
@@ -180,6 +185,18 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
           onChange={(e) => setFrecuencia(e.target.value)}
           required
         />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Hora de inicio <span className="text-muted fw-normal">(opcional)</span></Form.Label>
+        <Form.Control
+          type="time"
+          value={horaInicio}
+          onChange={(e) => setHoraInicio(e.target.value)}
+        />
+        <Form.Text className="text-muted">
+          Primera dosis del día. Las siguientes se calculan según el intervalo.
+        </Form.Text>
       </Form.Group>
 
       <div className="d-flex gap-2">

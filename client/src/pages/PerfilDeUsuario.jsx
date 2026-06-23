@@ -99,10 +99,11 @@ function PerfilDeUsuario() {
           <Table striped bordered hover responsive>
             <thead>
               <tr>
-                <th>Nombre del Medicamento</th>
+                <th>Medicamento</th>
                 <th>Cantidad (mg)</th>
-                <th>Intervalo (horas)</th>
-                <th>Frecuencia (días)</th>
+                <th>Intervalo (h)</th>
+                <th>Días</th>
+                <th>Hora</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -113,6 +114,11 @@ function PerfilDeUsuario() {
                   <td>{medicamento.cantidad_mg}</td>
                   <td>{medicamento.intervalo_horas}</td>
                   <td>{medicamento.cada_cuanto_dias}</td>
+                  <td>
+                    {medicamento.hora_inicio
+                      ? medicamento.hora_inicio.slice(0, 5)
+                      : <span className="text-muted">—</span>}
+                  </td>
                   <td>
                     <Button
                       variant="info"
