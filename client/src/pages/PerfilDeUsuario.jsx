@@ -101,9 +101,9 @@ function PerfilDeUsuario() {
             <thead>
               <tr>
                 <th>Medicamento</th>
-                <th>Cantidad (mg)</th>
+                <th>mg</th>
                 <th>Frecuencia</th>
-                <th>Duración</th>
+                <th className="d-none d-sm-table-cell">Duración</th>
                 <th>Hora</th>
                 <th>Acciones</th>
               </tr>
@@ -114,7 +114,7 @@ function PerfilDeUsuario() {
                   <td>{medicamento.nombre_medicamento}</td>
                   <td>{medicamento.cantidad_mg}</td>
                   <td>{labelFrecuencia(medicamento.intervalo_horas)}</td>
-                  <td>{labelDuracion(medicamento.cada_cuanto_dias)}</td>
+                  <td className="d-none d-sm-table-cell">{labelDuracion(medicamento.cada_cuanto_dias)}</td>
                   <td>
                     {medicamento.hora_inicio
                       ? medicamento.hora_inicio.slice(0, 5)

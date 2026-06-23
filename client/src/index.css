@@ -15,3 +15,27 @@ body {
   background-color: #ffffff;
   color: #212529;
 }
+
+/* ── Móvil general ───────────────────────────── */
+@media (max-width: 576px) {
+  /* Reduce padding excesivo en formularios */
+  .p-5 { padding: 1.5rem !important; }
+
+  /* Modales full-width en móvil */
+  .modal-dialog { margin: 0.5rem; }
+
+  /* Tablas con scroll horizontal */
+  .table-responsive { -webkit-overflow-scrolling: touch; }
+
+  /* Evita que texto se desborde */
+  td, th { white-space: nowrap; }
+
+  /* Botones de acción más compactos */
+  .btn-sm { padding: 0.2rem 0.45rem; font-size: 0.78rem; }
+
+  /* Cards en alarmas full-width */
+  .card { margin-left: 0 !important; margin-right: 0 !important; }
+
+  /* Navbar brand no se recorte */
+  .navbar-brand span { font-size: 1rem; }
+}

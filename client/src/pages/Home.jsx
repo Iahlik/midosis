@@ -1,11 +1,15 @@
 import React from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import "animate.css";
 import midosisLogo from "../assets/img/midosis-logo.png";
-import { Link } from "react-router-dom"; // Importa Link de react-router-dom
+import { Link, Navigate } from "react-router-dom";
 import { FaSignInAlt, FaUserPlus, FaQuestionCircle } from "react-icons/fa";
+import { useAuth } from "../context/AuthProvider";
 
 function Home() {
+  const { isLoggedIn } = useAuth();
+  if (isLoggedIn) return <Navigate to="/perfil-usuario" replace />;
+
   return (
     <Container className="animate__animated animate__fadeIn text-center">
       <img

@@ -1,14 +1,10 @@
 .perfil-container {
-    min-height: 70vh; /* Establece la altura mínima en 70% de la altura de la ventana */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  h1 {
-    font-size: 2rem; /* Cambia el tamaño del título si es necesario */
-  }
-  
-  /* Puedes agregar estilos adicionales según tus necesidades */
-  
+  min-height: 70vh;
+  width: 100%;
+  padding: 1.5rem 1rem;
+}
+
+@media (max-width: 576px) {
+  .perfil-container h1 { font-size: 1.5rem; }
+  .perfil-container h2 { font-size: 1.2rem; }
+}
