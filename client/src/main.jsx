@@ -4,6 +4,7 @@ import App from './App.jsx'
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "font-awesome/css/font-awesome.css";
+import './assets/css/theme.css';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
