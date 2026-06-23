@@ -1,9 +1,14 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { Resend } = require('resend');
 require('dotenv').config();
 const router = express.Router();
 const pool = require('../db/conexion');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -202,6 +207,95 @@ router.get('/catalogo-medicamentos', verifyToken, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al obtener catálogo' });
+  }
+});
+
+// Recuperar contraseña — genera token y envía email
+router.post('/recuperar-contrasena', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email requerido' });
+
+    const { rows } = await pool.query(
+      'SELECT usuario_id FROM usuarios WHERE correo_electronico = $1',
+      [email.toLowerCase()]
+    );
+
+    // Respuesta genérica siempre para no revelar si el email existe
+    if (rows.length === 0) return res.json({ message: 'Si el correo existe, recibirás el enlace.' });
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expira = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+    await pool.query(
+      `INSERT INTO reset_tokens (usuario_id, token, expira_en)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (usuario_id) DO UPDATE SET token = $2, expira_en = $3`,
+      [rows[0].usuario_id, token, expira]
+    );
+
+    const enlace = `${CLIENT_URL}/restablecer-contrasena?token=${token}`;
+
+    await resend.emails.send({
+      from: 'MiDosis <noreply@midosis.app>',
+      to: email.toLowerCase(),
+      subject: 'Recupera tu contraseña — MiDosis',
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto">
+          <h2>Recuperar contraseña</h2>
+          <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en MiDosis.</p>
+          <p>Haz click en el botón para crear una nueva contraseña. El enlace es válido por <strong>1 hora</strong>.</p>
+          <a href="${enlace}"
+             style="display:inline-block;padding:12px 24px;background:#0d6efd;color:#fff;border-radius:6px;text-decoration:none;font-weight:bold">
+            Restablecer contraseña
+          </a>
+          <p style="margin-top:24px;color:#666;font-size:13px">
+            Si no solicitaste este cambio, ignora este correo. Tu contraseña no cambiará.
+          </p>
+        </div>
+      `,
+    });
+
+    res.json({ message: 'Si el correo existe, recibirás el enlace.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Restablecer contraseña — valida token y actualiza
+router.post('/restablecer-contrasena', async (req, res) => {
+  try {
+    const { token, contrasena } = req.body;
+
+    if (!token || !contrasena) return res.status(400).json({ error: 'Datos incompletos' });
+    if (contrasena.length < 6) return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+
+    const { rows } = await pool.query(
+      'SELECT usuario_id, expira_en FROM reset_tokens WHERE token = $1',
+      [token]
+    );
+
+    if (rows.length === 0) return res.status(400).json({ error: 'Token inválido o expirado' });
+
+    if (new Date() > new Date(rows[0].expira_en)) {
+      await pool.query('DELETE FROM reset_tokens WHERE token = $1', [token]);
+      return res.status(400).json({ error: 'El enlace ha expirado. Solicita uno nuevo.' });
+    }
+
+    const hashedContrasena = await bcrypt.hash(contrasena, 10);
+
+    await pool.query(
+      'UPDATE usuarios SET contrasena = $1 WHERE usuario_id = $2',
+      [hashedContrasena, rows[0].usuario_id]
+    );
+
+    await pool.query('DELETE FROM reset_tokens WHERE token = $1', [token]);
+
+    res.json({ message: 'Contraseña actualizada exitosamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 

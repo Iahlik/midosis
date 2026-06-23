@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AjustesDeAlarma, Ayuda, Configuracion, FormularioDeMedicamento, Home, ListaDeMedicamentos, PerfilDeUsuario, RegistroNuevoUsuario, Login } from './pages/index';
+import { AjustesDeAlarma, Ayuda, Configuracion, FormularioDeMedicamento, Home, ListaDeMedicamentos, PerfilDeUsuario, RegistroNuevoUsuario, Login, RecuperarContrasena, RestablecerContrasena } from './pages/index';
 import { NavBar, Footer } from './components/index';
 import { AuthProvider } from './context/AuthProvider'; // Importa el AuthProvider
 import { ToastContainer } from 'react-toastify'; // Importa el ToastContainer y sus estilos
@@ -22,8 +22,9 @@ function App() {
             <Route path="/perfil-usuario" element={<PerfilDeUsuario />} />
             <Route path="/registro-nuevo-usuario" element={<RegistroNuevoUsuario />} />
             <Route path="/ayuda" element={<Ayuda />} />
-            <Route path="/login" element={<Login />} /> {/* Agrega la ruta de inicio de sesión */}
-            {/* Agrega más rutas según sea necesario */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
+            <Route path="/restablecer-contrasena" element={<RestablecerContrasena />} />
           </Routes>
         </div>
         <Footer />

@@ -23,6 +23,12 @@ CREATE TABLE detalles_dosis (
     cada_cuanto_dias INT NOT NULL
 );
 
+CREATE TABLE reset_tokens (
+    usuario_id INT PRIMARY KEY REFERENCES usuarios(usuario_id) ON DELETE CASCADE,
+    token VARCHAR(64) NOT NULL,
+    expira_en TIMESTAMPTZ NOT NULL
+);
+
 INSERT INTO usuarios (nombre, correo_electronico, contrasena)
 VALUES
   ('Usuario1', 'usuario1@example.com', 'contrasena1'),

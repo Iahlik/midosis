@@ -7,3 +7,5 @@ export { default as ListaDeMedicamentos } from './ListaDeMedicamentos';
 export { default as PerfilDeUsuario } from './PerfilDeUsuario';
 export { default as RegistroNuevoUsuario } from './RegistroNuevoUsuario';
 export { default as Login } from './Login';
+export { default as RecuperarContrasena } from './RecuperarContrasena';
+export { default as RestablecerContrasena } from './RestablecerContrasena';

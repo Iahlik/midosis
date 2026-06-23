@@ -36,6 +36,9 @@ const Login = () => {
           </div>
         </Form>
         {error && <Alert variant="danger">{error}</Alert>}
+        <div className="text-center mt-2">
+          <small><a href="/recuperar-contrasena">¿Olvidaste tu contraseña?</a></small>
+        </div>
       </div>
     </div>
   );
