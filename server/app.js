@@ -13,7 +13,7 @@ const allowedOrigins = process.env.CLIENT_URL
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error('CORS no permitido'));
+    callback(null, false);
   },
   credentials: true,
 }));
