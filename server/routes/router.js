@@ -240,7 +240,7 @@ router.post('/recuperar-contrasena', async (req, res) => {
     const enlace = `${CLIENT_URL}/restablecer-contrasena?token=${token}`;
 
     await getResend().emails.send({
-      from: 'MiDosis <noreply@midosis.app>',
+      from: 'MiDosis <onboarding@resend.dev>',
       to: email.toLowerCase(),
       subject: 'Recupera tu contraseña — MiDosis',
       html: `
