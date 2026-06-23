@@ -7,8 +7,11 @@ require('dotenv').config();
 const router = express.Router();
 const pool = require('../db/conexion');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -236,7 +239,7 @@ router.post('/recuperar-contrasena', async (req, res) => {
 
     const enlace = `${CLIENT_URL}/restablecer-contrasena?token=${token}`;
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: 'MiDosis <noreply@midosis.app>',
       to: email.toLowerCase(),
       subject: 'Recupera tu contraseña — MiDosis',
