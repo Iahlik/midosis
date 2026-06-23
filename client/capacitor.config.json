@@ -3,6 +3,7 @@
   "appName": "MiDosis",
   "webDir": "dist",
   "server": {
+    "url": "https://midosis.vercel.app",
     "androidScheme": "https"
   },
   "plugins": {
