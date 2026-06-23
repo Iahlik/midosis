@@ -111,7 +111,12 @@ function PerfilDeUsuario() {
             <tbody>
               {medicamentos.map((medicamento) => (
                 <tr key={medicamento.dosis_id}>
-                  <td>{medicamento.nombre_medicamento}</td>
+                  <td>
+                    {medicamento.nombre_medicamento}
+                    {medicamento.notas && (
+                      <div className="text-muted small fst-italic">{medicamento.notas}</div>
+                    )}
+                  </td>
                   <td>{medicamento.cantidad_mg}</td>
                   <td>{labelFrecuencia(medicamento.intervalo_horas)}</td>
                   <td className="d-none d-sm-table-cell">{labelDuracion(medicamento.cada_cuanto_dias)}</td>

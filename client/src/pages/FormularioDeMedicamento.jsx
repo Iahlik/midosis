@@ -18,6 +18,7 @@ function FormularioDeMedicamento({ onSave }) {
   const [horaInicio, setHoraInicio] = useState('');
   const [duracionKey, setDuracionKey] = useState('indefinido');
   const [duracionPersonalizada, setDuracionPersonalizada] = useState('');
+  const [notas, setNotas] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingCatalogo, setLoadingCatalogo] = useState(true);
   const [error, setError] = useState(null);
@@ -81,6 +82,7 @@ function FormularioDeMedicamento({ onSave }) {
           intervalo_horas: intervaloHoras,
           cada_cuanto_dias: cadaCuantoDias,
           hora_inicio: horaInicio || null,
+          notas: notas.trim() || null,
         }),
       });
       if (!res.ok) throw new Error();
@@ -93,7 +95,7 @@ function FormularioDeMedicamento({ onSave }) {
 
       setCantidad(''); setFrecuenciaKey('24'); setIntervaloPersonalizado('');
       setHoraInicio(''); setDuracionKey('indefinido'); setDuracionPersonalizada('');
-      setMedicamentoId(''); setNombreManual('');
+      setMedicamentoId(''); setNombreManual(''); setNotas('');
     } catch {
       setError('Error al guardar el medicamento. Intenta de nuevo.');
     } finally {
@@ -188,6 +190,18 @@ function FormularioDeMedicamento({ onSave }) {
             placeholder="Número de días"
             value={duracionPersonalizada} onChange={(e) => setDuracionPersonalizada(e.target.value)} />
         )}
+      </Form.Group>
+
+      {/* Notas */}
+      <Form.Group className="mb-3">
+        <Form.Label>Notas <span className="text-muted fw-normal">(opcional)</span></Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={2}
+          placeholder="Ej: Tomar con comida, evitar alcohol..."
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+        />
       </Form.Group>
 
       <Button variant="primary" type="submit" disabled={loading}>

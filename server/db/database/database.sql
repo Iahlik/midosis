@@ -18,10 +18,11 @@ CREATE TABLE detalles_dosis (
     dosis_id SERIAL PRIMARY KEY,
     usuario_id INT REFERENCES usuarios(usuario_id),
     medicamento_id INT REFERENCES medicamentos(medicamento_id),
-    cantidad_mg DECIMAL(5, 2) NOT NULL,
+    cantidad_mg DECIMAL(7, 2) NOT NULL,
     intervalo_horas INT NOT NULL,
     cada_cuanto_dias INT,
-    hora_inicio TIME
+    hora_inicio TIME,
+    notas TEXT
 );
 
 CREATE TABLE reset_tokens (

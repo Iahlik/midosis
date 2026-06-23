@@ -29,6 +29,7 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
   const [horaInicio, setHoraInicio] = useState(
     medicamento.hora_inicio ? medicamento.hora_inicio.slice(0, 5) : ''
   );
+  const [notas, setNotas] = useState(medicamento.notas || '');
   const [loading, setLoading] = useState(false);
   const [loadingCatalogo, setLoadingCatalogo] = useState(true);
   const [error, setError] = useState(null);
@@ -89,6 +90,7 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
           intervalo_horas: intervaloHoras,
           cada_cuanto_dias: cadaCuantoDias,
           hora_inicio: horaInicio || null,
+          notas: notas.trim() || null,
         }),
       });
       if (!res.ok) throw new Error();
@@ -105,6 +107,7 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
         intervalo_horas: intervaloHoras,
         cada_cuanto_dias: cadaCuantoDias,
         hora_inicio: horaInicio || null,
+        notas: notas.trim() || null,
       });
     } catch {
       setError('Error al actualizar el medicamento. Intenta de nuevo.');
@@ -200,6 +203,18 @@ function FormularioEdicionMedicamento({ medicamento, onSave, onCancel }) {
             placeholder="Número de días"
             value={duracionPersonalizada} onChange={(e) => setDuracionPersonalizada(e.target.value)} />
         )}
+      </Form.Group>
+
+      {/* Notas */}
+      <Form.Group className="mb-3">
+        <Form.Label>Notas <span className="text-muted fw-normal">(opcional)</span></Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={2}
+          placeholder="Ej: Tomar con comida, evitar alcohol..."
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+        />
       </Form.Group>
 
       <div className="d-flex gap-2">
