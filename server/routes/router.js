@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
 
     const result = await pool.query(
       'SELECT * FROM usuarios WHERE correo_electronico = $1',
-      [email]
+      [email.toLowerCase()]
     );
 
     if (result.rows.length === 0) {
@@ -76,9 +76,11 @@ router.post('/usuarios', async (req, res) => {
       return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
     }
 
+    const emailNormalizado = correo_electronico.toLowerCase();
+
     const existing = await pool.query(
       'SELECT usuario_id FROM usuarios WHERE correo_electronico = $1',
-      [correo_electronico]
+      [emailNormalizado]
     );
     if (existing.rows.length > 0) {
       return res.status(409).json({ error: 'El correo ya está registrado' });
@@ -88,7 +90,7 @@ router.post('/usuarios', async (req, res) => {
 
     await pool.query(
       'INSERT INTO usuarios (nombre, correo_electronico, contrasena) VALUES ($1, $2, $3)',
-      [nombre, correo_electronico, hashedContrasena]
+      [nombre, emailNormalizado, hashedContrasena]
     );
 
     res.status(201).json({ message: 'Usuario registrado exitosamente' });
