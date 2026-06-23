@@ -6,9 +6,15 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(',').map(o => o.trim())
-  : ['http://localhost:5173'];
+// Capacitor Android usa https://localhost o capacitor://localhost como origen
+const CAPACITOR_ORIGINS = ['https://localhost', 'capacitor://localhost', 'http://localhost'];
+
+const allowedOrigins = [
+  ...CAPACITOR_ORIGINS,
+  ...(process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(',').map(o => o.trim())
+    : ['http://localhost:5173']),
+];
 
 app.use(cors({
   origin: (origin, callback) => {
