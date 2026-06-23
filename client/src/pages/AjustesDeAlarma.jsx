@@ -125,6 +125,12 @@ function AjustesDeAlarma() {
         Activa los recordatorios para cada medicamento. Las horas se calculan a partir de tu configuración de perfil.
       </p>
 
+      <Alert variant="warning" className="small">
+        <strong>Xiaomi / MIUI:</strong> Para que las alarmas sobrevivan el reinicio, ve a{' '}
+        <strong>Ajustes → Aplicaciones → MiDosis → Inicio automático</strong> y actívalo.
+        Sin esto, MIUI cancela las notificaciones al reiniciar.
+      </Alert>
+
       {mensaje && (
         <Alert variant={mensaje.tipo} dismissible onClose={() => setMensaje(null)}>
           {mensaje.texto}
